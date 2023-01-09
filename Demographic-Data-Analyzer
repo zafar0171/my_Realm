@@ -1,0 +1,138 @@
+import pandas as pd
+
+
+df = pd.read_excel('adult_modified.xlsx')
+df.head(5)
+
+
+! pip install openpyxl
+
+# Q. How many people of each race are represented in this dataset? This should be a Pandas series with race names as the index labels.
+
+df.head()
+
+df['Age'].head()
+
+df[['Age']].value_counts()
+
+race_col = df['Race'].value_counts()
+
+race_col.to_frame()
+
+# Q. What is avearge age of male?
+
+
+df['Sex'].value_counts()
+
+df['Sex'] == 'Male'
+
+df['Age'].mean()
+
+male_r = df.loc[df['Sex'] == 'M']
+
+
+male_average_age = male_r['Age'].mean()
+male_average_age
+
+Q# What is the percentage of people who have a Bachelor's degree?
+
+
+def calculate_percentage(count, total):
+    return 100 * count / total
+
+df['education'].replace(' Bachelors','Bachelors',inplace=True)
+
+df['education'] .value_counts().apply(calculate_percentage,total = len(df)).head()
+
+
+
+# Q.What is the minimum number of hours a person works per week?
+
+df['Hours-per-wee`k'].min()
+
+def custom_function(group):
+    return group['Weight']
+
+result = groups.apply(custom_function)
+print(result)
+
+df['salary']
+
+[df[df['salary'] == ' >50K']['native_country'] == ' India']
+
+
+
+# Q.6 Identify the most popular occupation for those who earn >50K in India.
+
+India_occ = df[df['native_country'] == ' India']
+India_occ.head(5)
+
+Max_paid= India_occ[India_occ['salary'] == ' >50K']
+Max_paid.head(5)
+
+Max_paid['Occupation'].mode()
+
+
+
+
+# Q. What percentage of people without advanced education make more than 50K?
+
+without_advanced = df.loc[~df['education'].isin([' Bachelors', ' Masters', ' Doctorate'])]
+without_advanced.head(5)
+
+Max_pay_WA =  without_advanced[without_advanced['salary'] == ' >50K']
+Max_pay_WA.head(5)
+
+Max_pay_WA['salary'].value_counts().apply(calculate_percentage,total = len(df))
+
+
+
+
+# Q. What  percentage  of people with advacned education(Bachelors,Masters or doctorate) make more than 50K?
+
+ad = df.loc[df['education'].isin([' Bachelors', ' Masters', ' Doctorate'])]
+
+ad['education'].value_counts()
+
+ad['education'].value_counts().apply(calculate_percentage,total=len(df))
+
+max_salary = ad[ad['salary'] == ' >50K']
+
+max_salary['salary'].value_counts().apply(calculate_percentage,total = len(df))
+
+
+
+
+# Q. What country has the highest percentage of people that earn >50K and what is that percentage?
+
+salary_greater_50 = df[df['salary'] == ' >50K']
+
+salary_greater_50['native_country'].mode()
+
+salary_greater_50['native_country'].value_counts().head(1)
+
+salary_greater_50['native_country'].value_counts().apply(calculate_percentage,total = len(salary_greater_50)).head(1)
+
+
+
+
+# Q.What percentage of the people who work the minimum number of hours per week have a salary of more than 50K?
+
+Minimum_work_hour = df[df['Hours-per-week'] ==  1]
+Minimum_work_hour.head(5)
+
+Minimum_work_hour = Minimum_work_hour[Minimum_work_hour['salary'] == ' >50K']
+
+af = Minimum_work_hour['salary'].value_counts().apply(calculate_percentage,total = len(df))
+
+af
+
+af.to_frame()
+
+# with and without `Bachelors`, `Masters`, or `Doctorate`
+    higher_education =  df.loc[df['education'].isin(['Bachelors', 'Masters', 'Doctorate'])]
+    lower_education = df.loc[~df['education'].isin(['Bachelors', 'Masters', 'Doctorate'])]
+
+    # percentage with salary >50K
+    higher_education_rich = round(100.0 * (higher_education['salary'] == '>50K').sum() / len(higher_education), 1 )
+    lower_education_rich = round(100.0 * (lower_education['salary'] == '>50K').sum() / len(lower_education), 1 )
