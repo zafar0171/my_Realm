@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+med_report = pd.read_csv('medical_examination.csv')
+med_report.head(5)
+
+med_report['overweight'] = (med_report['weight']/((med_report['height']/100)**2) > 25).astype(int)
+
+med_report
+
+med_report[['gluc','cholesterol']] = (med_report[['gluc','cholesterol']] > 1).astype(int)
+
+def draw_cat_plot():
+    
+    mr_cat = pd.melt(med_report, id_vars=['cardio'], value_vars=['active', 'alco', 'cholesterol', 'gluc', 'overweight', 'smoke'])
+
+    fig = sns.catplot(data = mr_cat, kind='count',  x='variable', hue='value', col='cardio').set(ylabel = 'total').fig
+
+    fig.savefig('catplot.png')
+    return fig
+
+draw_cat_plot()
+
+def draw_heat_map():
+    
+    df_heat = med_report[ 
+        ( med_report['ap_lo'] <= med_report['ap_hi'] ) & 
+        ( med_report['height'] >= med_report['height'].quantile(0.025) ) & 
+        ( med_report['height'] <= med_report['height'].quantile(0.975) ) & 
+        ( med_report['weight'] >= med_report['weight'].quantile(0.025) ) & 
+        ( med_report['weight'] <= med_report['weight'].quantile(0.975) ) 
+    ]
+
+    
+    corr = med_report.corr()
+    mask = np.triu(corr)
+
+
+    
+    fig, ax =  plt.subplots()
+    ax = sns.heatmap(corr, mask=mask, annot=True, fmt='0.1f', square=True)
+
+    fig.savefig('heatmap.png')
+    return fig
+
+draw_heat_map()
